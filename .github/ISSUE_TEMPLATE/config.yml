@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/Niru-re/nirmal_profile/discussions
+    about: Long-form questions, roadmap discussions, and feature brainstorming.
+  - name: 📧 Maintainer Email
+    url: mailto:hello@nirmaan.dev
+    about: For private or sensitive inquiries that aren't suitable for public issues.

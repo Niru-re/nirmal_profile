@@ -1,15 +1,16 @@
 export const SITE_CONFIG = {
-  name: "Nirmaan",
-  title: "Nirmaan — Full-Stack Developer & Product Engineer",
+  name: "Nirmal Anil Poreddiwar",
+  title: "Nirmal Anil Poreddiwar — Full-Stack Developer & Product Engineer",
   description:
     "Building enterprise-quality digital products with precision, performance, and premium design.",
   url: "https://nirmaan.dev",
-  email: "hello@nirmaan.dev",
+  email: "nirmalporeddiwar@gmail.com",
   location: "India",
   availability: "Available for freelance & full-time",
-  github: "https://github.com/nirmaan",
-  linkedin: "https://linkedin.com/in/nirmaan",
-  twitter: "https://twitter.com/nirmaan",
+  github: "https://github.com/Niru-re",
+  linkedin: "https://www.linkedin.com/in/nirmal-poreddiwar-892b25287/",
+  instagram: "https://www.instagram.com/nirmal_poreddiwar_?igsh=MTh5MGhkZWl1MDM0cQ==",
+  twitter: "",
   resumeUrl: "/resume.pdf",
 };
 

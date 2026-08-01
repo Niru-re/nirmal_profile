@@ -16,7 +16,7 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { Reveal } from "@/components/shared/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CURRENCY_RATES, type Service } from "@/data/services";
+import { CURRENCY_RATES, type Service } from "@/data/services-client";
 import { formatCurrency } from "@/lib/utils";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {

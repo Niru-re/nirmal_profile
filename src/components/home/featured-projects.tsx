@@ -6,10 +6,14 @@ import { ProjectCard } from "@/components/shared/project-card";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Reveal } from "@/components/shared/reveal";
 import { Button } from "@/components/ui/button";
-import { getFeaturedProjects } from "@/data/projects";
+import type { Project } from "@/data/projects";
 
-export function FeaturedProjects() {
-  const featured = getFeaturedProjects();
+interface FeaturedProjectsProps {
+  projects: Project[];
+}
+
+export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
+  const featured = projects;
 
   return (
     <section className="relative px-4 py-24 sm:px-6">

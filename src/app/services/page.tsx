@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Reveal } from "@/components/shared/reveal";
 import { ServiceCard } from "@/components/services/service-card";
-import { services } from "@/data/services";
+import { getAllServices } from "@/data/services";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Services",
   description: "Professional services including web development, data analytics, machine learning, and design.",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getAllServices();
   return (
     <div className="px-4 pt-32 pb-24 sm:px-6">
       <div className="mx-auto max-w-6xl">

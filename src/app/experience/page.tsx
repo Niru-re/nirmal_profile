@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Reveal } from "@/components/shared/reveal";
 import { Timeline } from "@/components/experience/timeline";
-import { experiences } from "@/data/experience";
+import { getAllExperiences } from "@/data/experience";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Experience",
   description: "Professional experience and career timeline.",
 };
 
-export default function ExperiencePage() {
+export default async function ExperiencePage() {
+  const experiences = await getAllExperiences();
   return (
     <div className="px-4 pt-32 pb-24 sm:px-6">
       <div className="mx-auto max-w-3xl">

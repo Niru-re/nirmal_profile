@@ -5,20 +5,23 @@ import { ArrowLeft } from "lucide-react";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Reveal } from "@/components/shared/reveal";
 import { ProjectCard } from "@/components/shared/project-card";
-import { categories, getCategoryBySlug } from "@/data/categories";
+import { getAllCategories, getCategoryBySlug } from "@/data/categories";
 import { getProjectsByCategory } from "@/data/projects";
+
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return categories.map((c) => ({ slug: c.slug }));
+  const all = await getAllCategories();
+  return all.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = getCategoryBySlug(slug);
+  const category = await getCategoryBySlug(slug);
   if (!category) return { title: "Category Not Found" };
   return {
     title: category.name,
@@ -28,10 +31,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryDetailPage({ params }: Props) {
   const { slug } = await params;
-  const category = getCategoryBySlug(slug);
+  const [category, categoryProjects] = await Promise.all([
+    getCategoryBySlug(slug),
+    getProjectsByCategory(slug),
+  ]);
   if (!category) notFound();
-
-  const categoryProjects = getProjectsByCategory(slug);
 
   return (
     <div className="px-4 pt-32 pb-24 sm:px-6">

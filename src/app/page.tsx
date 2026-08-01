@@ -7,13 +7,22 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { getFeaturedProjects } from "@/data/projects";
+import { getStats } from "@/data/experience";
 
-export default function HomePage() {
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const [featuredProjects, stats] = await Promise.all([
+    getFeaturedProjects(),
+    getStats(),
+  ]);
+
   return (
     <>
       <Hero />
-      <StatsSection />
-      <FeaturedProjects />
+      <StatsSection stats={stats} />
+      <FeaturedProjects projects={featuredProjects} />
 
       <section className="relative px-4 py-24 sm:px-6">
         <div className="mx-auto max-w-6xl">

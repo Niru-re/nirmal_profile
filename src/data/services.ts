@@ -1,14 +1,6 @@
-export interface Service {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  duration: string;
-  startingPrice: number;
-  currency: string;
-  technologies: string[];
-  features: string[];
-}
+export type { Service } from "@/data/services-client";
+export { CURRENCY_RATES } from "@/data/services-client";
+import type { Service } from "@/data/services-client";
 
 export const services: Service[] = [
   {
@@ -121,9 +113,34 @@ export const services: Service[] = [
   },
 ];
 
-export const CURRENCY_RATES: Record<string, number> = {
-  USD: 1,
-  EUR: 0.92,
-  GBP: 0.79,
-  INR: 83.5,
-};
+type ServiceRow = Omit<Service, "startingPrice"> & { starting_price: number };
+
+function normalize(row: ServiceRow): Service {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    icon: row.icon,
+    duration: row.duration ?? "",
+    startingPrice: Number(row.starting_price) ?? 0,
+    currency: row.currency ?? "USD",
+    technologies: row.technologies ?? [],
+    features: row.features ?? [],
+  };
+}
+
+export async function getAllServices(): Promise<Service[]> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return [...services];
+  try {
+    const { data, error } = await supabase
+      .from("services")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false })
+      .order("title", { ascending: true });
+    if (error) { console.error("[services] Supabase error:", error.message); return [...services]; }
+    if (!data || data.length === 0) return [...services];
+    return (data as ServiceRow[]).map(normalize);
+  } catch (err) { console.error("[services] fetch failed:", err); return [...services]; }
+}

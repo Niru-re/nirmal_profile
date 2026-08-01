@@ -73,3 +73,44 @@ export const certificates: Certificate[] = [
     skills: ["UI Design", "UX Research", "Prototyping"],
   },
 ];
+
+type CertificateRow = Omit<
+  Certificate,
+  "issueDate" | "expiryDate" | "imageUrl" | "verificationUrl" | "credentialId"
+> & {
+  issue_date: string;
+  expiry_date: string | null;
+  image_url: string;
+  verification_url: string | null;
+  credential_id: string | null;
+};
+
+function normalize(row: CertificateRow): Certificate {
+  return {
+    id: String(row.id),
+    title: row.title,
+    issuer: row.issuer,
+    issueDate: String(row.issue_date).slice(0, 7),
+    expiryDate: row.expiry_date ? String(row.expiry_date).slice(0, 7) : undefined,
+    imageUrl: row.image_url ?? "",
+    verificationUrl: row.verification_url ?? undefined,
+    credentialId: row.credential_id ?? undefined,
+    skills: row.skills ?? [],
+  };
+}
+
+export async function getAllCertificates(): Promise<Certificate[]> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return [...certificates];
+  try {
+    const { data, error } = await supabase
+      .from("certificates")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false })
+      .order("issue_date", { ascending: false });
+    if (error) { console.error("[certificates] Supabase error:", error.message); return [...certificates]; }
+    if (!data || data.length === 0) return [...certificates];
+    return (data as CertificateRow[]).map(normalize);
+  } catch (err) { console.error("[certificates] fetch failed:", err); return [...certificates]; }
+}

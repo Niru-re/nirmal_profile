@@ -11,6 +11,20 @@ export interface Experience {
   achievements: string[];
 }
 
+export interface Education {
+  institution: string;
+  degree: string;
+  field: string;
+  duration: string;
+  description: string;
+}
+
+export interface Skill {
+  name: string;
+  level: number;
+  category: string;
+}
+
 export const experiences: Experience[] = [
   {
     id: "1",
@@ -80,14 +94,6 @@ export const experiences: Experience[] = [
   },
 ];
 
-export interface Education {
-  institution: string;
-  degree: string;
-  field: string;
-  duration: string;
-  description: string;
-}
-
 export const education: Education[] = [
   {
     institution: "University of Technology",
@@ -98,12 +104,6 @@ export const education: Education[] = [
       "Focused on software engineering, data structures, machine learning, and web technologies.",
   },
 ];
-
-export interface Skill {
-  name: string;
-  level: number;
-  category: string;
-}
 
 export const skills: Skill[] = [
   { name: "TypeScript", level: 95, category: "Frontend" },
@@ -126,3 +126,102 @@ export const stats = [
   { label: "Technologies", value: "25+" },
   { label: "Happy Clients", value: "30+" },
 ];
+
+type ExperienceRow = Omit<Experience, "startDate" | "endDate"> & {
+  start_date: string;
+  end_date: string | null;
+};
+
+type SkillRow = Skill;
+type StatRow = (typeof stats)[number];
+
+function normalizeExperience(row: ExperienceRow): Experience {
+  return {
+    id: String(row.id),
+    company: row.company,
+    role: row.role,
+    duration: row.duration,
+    startDate: String(row.start_date).slice(0, 7),
+    endDate: row.end_date ? String(row.end_date).slice(0, 7) : null,
+    description: row.description ?? "",
+    responsibilities: row.responsibilities ?? [],
+    technologies: row.technologies ?? [],
+    achievements: row.achievements ?? [],
+  };
+}
+
+export async function getAllExperiences(): Promise<Experience[]> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return [...experiences];
+  try {
+    const { data, error } = await supabase
+      .from("experiences")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false })
+      .order("start_date", { ascending: false });
+    if (error) { console.error("[experiences] Supabase error:", error.message); return [...experiences]; }
+    if (!data || data.length === 0) return [...experiences];
+    return (data as ExperienceRow[]).map(normalizeExperience);
+  } catch (err) { console.error("[experiences] fetch failed:", err); return [...experiences]; }
+}
+
+export async function getAllEducation(): Promise<Education[]> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return [...education];
+  try {
+    const { data, error } = await supabase
+      .from("education")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false });
+    if (error) { console.error("[education] Supabase error:", error.message); return [...education]; }
+    if (!data || data.length === 0) return [...education];
+    return (data as Education[]).map((row) => ({
+      institution: row.institution,
+      degree: row.degree,
+      field: row.field,
+      duration: row.duration,
+      description: row.description ?? "",
+    }));
+  } catch (err) { console.error("[education] fetch failed:", err); return [...education]; }
+}
+
+export async function getAllSkills(): Promise<Skill[]> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return [...skills];
+  try {
+    const { data, error } = await supabase
+      .from("skills")
+      .select("*")
+      .order("category", { ascending: true })
+      .order("sort_order", { ascending: true, nullsFirst: false })
+      .order("level", { ascending: false });
+    if (error) { console.error("[skills] Supabase error:", error.message); return [...skills]; }
+    if (!data || data.length === 0) return [...skills];
+    return (data as SkillRow[]).map((row) => ({
+      name: row.name,
+      level: Number(row.level),
+      category: row.category,
+    }));
+  } catch (err) { console.error("[skills] fetch failed:", err); return [...skills]; }
+}
+
+export async function getStats(): Promise<Array<(typeof stats)[number]>> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return [...stats];
+  try {
+    const { data, error } = await supabase
+      .from("stats")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false });
+    if (error) { console.error("[stats] Supabase error:", error.message); return [...stats]; }
+    if (!data || data.length === 0) return [...stats];
+    return (data as StatRow[]).map((row) => ({
+      label: row.label,
+      value: row.value,
+    }));
+  } catch (err) { console.error("[stats] fetch failed:", err); return [...stats]; }
+}

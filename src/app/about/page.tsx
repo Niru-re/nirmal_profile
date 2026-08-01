@@ -6,15 +6,22 @@ import { Reveal } from "@/components/shared/reveal";
 import { GlassCard } from "@/components/shared/glass-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { skills, education, stats } from "@/data/experience";
+import { getAllSkills, getAllEducation, getStats } from "@/data/experience";
 import { SITE_CONFIG } from "@/lib/constants";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "About",
   description: "Learn about my background, skills, education, and professional journey.",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [skills, education, stats] = await Promise.all([
+    getAllSkills(),
+    getAllEducation(),
+    getStats(),
+  ]);
   const skillCategories = [...new Set(skills.map((s) => s.category))];
 
   return (

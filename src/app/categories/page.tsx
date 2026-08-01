@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Reveal } from "@/components/shared/reveal";
-import { categories } from "@/data/categories";
+import { getAllCategories } from "@/data/categories";
 
 export const metadata: Metadata = {
   title: "Categories",
@@ -17,7 +17,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Code2, Palette, BarChart3, Brain, Terminal, PieChart, Database, Film, PenTool, Zap,
 };
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+  const categories = await getAllCategories();
   return (
     <div className="px-4 pt-32 pb-24 sm:px-6">
       <div className="mx-auto max-w-6xl">

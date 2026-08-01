@@ -1,3 +1,6 @@
+// ⚠️  Import MUST be at the top — never after function definitions
+import { videoUrl as toVideoUrl, thumbnailUrl as toThumbUrl } from "@/lib/storage";
+
 export interface Video {
   id: string;
   title: string;
@@ -9,6 +12,7 @@ export interface Video {
   projectSlug?: string;
 }
 
+// Static fallback — used when Supabase is unavailable or returns no rows
 export const videos: Video[] = [
   {
     id: "1",
@@ -55,3 +59,44 @@ export const videos: Video[] = [
     projectSlug: "ecommerce-dashboard",
   },
 ];
+
+type VideoRow = Omit<Video, "videoUrl" | "projectSlug"> & {
+  video_url: string;
+  project_slug: string | null;
+};
+
+function normalize(row: VideoRow): Video {
+  return {
+    id: String(row.id),
+    title: row.title,
+    description: row.description ?? "",
+    // storageUrl passes through absolute URLs and /public paths unchanged,
+    // and builds a full Supabase Storage URL for bare filenames.
+    thumbnail: toThumbUrl(row.thumbnail ?? ""),
+    videoUrl: toVideoUrl(row.video_url ?? ""),
+    duration: row.duration ?? "",
+    technologies: row.technologies ?? [],
+    projectSlug: row.project_slug ?? undefined,
+  };
+}
+
+export async function getAllVideos(): Promise<Video[]> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return [...videos];
+  try {
+    const { data, error } = await supabase
+      .from("videos")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false });
+    if (error) {
+      console.error("[videos] Supabase error:", error.message);
+      return [...videos];
+    }
+    if (!data || data.length === 0) return [...videos];
+    return (data as VideoRow[]).map(normalize);
+  } catch (err) {
+    console.error("[videos] fetch failed:", err);
+    return [...videos];
+  }
+}

@@ -7,6 +7,19 @@ export interface Category {
   projectCount: number;
 }
 
+export type CategoryRow = Omit<Category, "projectCount"> & { project_count: number };
+
+export function normalizeCategory(row: CategoryRow): Category {
+  return {
+    slug: row.slug,
+    name: row.name,
+    description: row.description,
+    icon: row.icon,
+    gradient: row.gradient,
+    projectCount: row.project_count ?? 0,
+  };
+}
+
 export const categories: Category[] = [
   {
     slug: "web-development",
@@ -90,6 +103,46 @@ export const categories: Category[] = [
   },
 ];
 
-export function getCategoryBySlug(slug: string) {
-  return categories.find((c) => c.slug === slug);
+export function getAllCategoriesStatic(): Category[] {
+  return [...categories];
+}
+export function getCategoryBySlugStatic(slug: string): Category | null {
+  return categories.find((c) => c.slug === slug) ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// Supabase-backed async functions (fall back to static data when unavailable)
+// Using dynamic import() so that next/headers is never pulled into client bundles.
+// ---------------------------------------------------------------------------
+
+export async function getAllCategories(): Promise<Category[]> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return getAllCategoriesStatic();
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false })
+      .order("name", { ascending: true });
+    if (error) { console.error("[categories] Supabase error:", error.message); return getAllCategoriesStatic(); }
+    if (!data || data.length === 0) return getAllCategoriesStatic();
+    return (data as CategoryRow[]).map(normalizeCategory);
+  } catch (err) { console.error("[categories] fetch failed:", err); return getAllCategoriesStatic(); }
+}
+
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  const { loadSupabaseServerClientOrNull } = await import("@/data/_db");
+  const supabase = await loadSupabaseServerClientOrNull();
+  if (!supabase) return getCategoryBySlugStatic(slug);
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+    if (error) { console.error("[categories/slug] Supabase error:", error.message); return getCategoryBySlugStatic(slug); }
+    if (!data) return getCategoryBySlugStatic(slug);
+    return normalizeCategory(data as CategoryRow);
+  } catch (err) { console.error("[categories/slug] fetch failed:", err); return getCategoryBySlugStatic(slug); }
 }

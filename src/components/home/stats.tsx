@@ -2,9 +2,12 @@
 
 import { Reveal } from "@/components/shared/reveal";
 import { GlassCard } from "@/components/shared/glass-card";
-import { stats } from "@/data/experience";
 
-export function StatsSection() {
+interface StatsSectionProps {
+  stats: Array<{ label: string; value: string }>;
+}
+
+export function StatsSection({ stats }: StatsSectionProps) {
   return (
     <section className="relative px-4 py-24 sm:px-6">
       <div className="mx-auto max-w-6xl">

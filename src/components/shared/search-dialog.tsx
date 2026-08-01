@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Search, ArrowRight } from "lucide-react";
-import { projects } from "@/data/projects";
+import { projects } from "@/data/projects-client";
 
 interface SearchDialogProps {
   open: boolean;

@@ -59,13 +59,13 @@ export function ProjectCard({ project, index = 0, featured = false }: ProjectCar
             featured && "lg:col-span-2"
           )}
         >
-          <div
-            className={cn(
-              "relative overflow-hidden bg-gradient-to-br from-accent-purple/10 via-accent-blue/5 to-accent-cyan/10",
-              featured ? "aspect-[16/9]" : "aspect-[16/10]"
-            )}
-          >
-            {project.coverImage ? (
+          {project.coverImage ? (
+            <div
+              className={cn(
+                "relative overflow-hidden bg-gradient-to-br from-accent-purple/10 via-accent-blue/5 to-accent-cyan/10",
+                featured ? "aspect-[16/9]" : "aspect-[16/10]"
+              )}
+            >
               <Image
                 src={project.coverImage}
                 alt={project.title}
@@ -74,12 +74,12 @@ export function ProjectCard({ project, index = 0, featured = false }: ProjectCar
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 unoptimized
               />
-            ) : null}
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-60" />
-            <div className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/40 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:opacity-100">
-              <ArrowUpRight className="h-4 w-4 text-white" />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-60" />
+              <div className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/40 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:opacity-100">
+                <ArrowUpRight className="h-4 w-4 text-white" />
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="p-6">
             <div className="mb-3 flex items-center gap-2">

@@ -86,9 +86,9 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         </Reveal>
 
-        <Reveal delay={0.2}>
-          <div className="relative my-12 aspect-video overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-accent-purple/10 via-accent-blue/5 to-accent-cyan/10">
-            {project.coverImage ? (
+        {project.coverImage ? (
+          <Reveal delay={0.2}>
+            <div className="relative my-12 aspect-video overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-accent-purple/10 via-accent-blue/5 to-accent-cyan/10">
               <Image
                 src={project.coverImage}
                 alt={project.title}
@@ -97,9 +97,9 @@ export default async function ProjectDetailPage({ params }: Props) {
                 className="object-cover"
                 unoptimized
               />
-            ) : null}
-          </div>
-        </Reveal>
+            </div>
+          </Reveal>
+        ) : null}
 
         <div className="space-y-10">
           <Reveal delay={0.1}>

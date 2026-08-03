@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Code2, Clock, Calendar } from "lucide-react";
@@ -86,7 +87,18 @@ export default async function ProjectDetailPage({ params }: Props) {
         </Reveal>
 
         <Reveal delay={0.2}>
-          <div className="my-12 aspect-video rounded-2xl bg-gradient-to-br from-accent-purple/10 via-accent-blue/5 to-accent-cyan/10 border border-white/[0.06]" />
+          <div className="relative my-12 aspect-video overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-accent-purple/10 via-accent-blue/5 to-accent-cyan/10">
+            {project.coverImage ? (
+              <Image
+                src={project.coverImage}
+                alt={project.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 80vw"
+                className="object-cover"
+                unoptimized
+              />
+            ) : null}
+          </div>
         </Reveal>
 
         <div className="space-y-10">

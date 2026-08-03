@@ -1,3 +1,5 @@
+import { certificateImageUrl } from "@/lib/storage";
+
 export interface Certificate {
   id: string;
   title: string;
@@ -92,7 +94,7 @@ function normalize(row: CertificateRow): Certificate {
     issuer: row.issuer,
     issueDate: String(row.issue_date).slice(0, 7),
     expiryDate: row.expiry_date ? String(row.expiry_date).slice(0, 7) : undefined,
-    imageUrl: row.image_url ?? "",
+    imageUrl: certificateImageUrl(row.image_url ?? ""),
     verificationUrl: row.verification_url ?? undefined,
     credentialId: row.credential_id ?? undefined,
     skills: row.skills ?? [],

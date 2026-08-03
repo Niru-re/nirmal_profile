@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, Download, ZoomIn } from "lucide-react";
 import { GlassCard } from "@/components/shared/glass-card";
@@ -26,11 +27,22 @@ export function CertificateGallery({ certificates }: CertificateGalleryProps) {
             >
               <GlassCard className="overflow-hidden !p-0">
                 <div className="relative aspect-[4/3] bg-gradient-to-br from-accent-purple/10 to-accent-blue/10">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-4xl font-bold text-white/[0.05]">
-                      {cert.issuer.charAt(0)}
-                    </span>
-                  </div>
+                  {cert.imageUrl ? (
+                    <Image
+                      src={cert.imageUrl}
+                      alt={cert.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-4xl font-bold text-white/[0.05]">
+                        {cert.issuer.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                     <ZoomIn className="h-8 w-8 text-white" />
                   </div>
@@ -73,7 +85,18 @@ export function CertificateGallery({ certificates }: CertificateGalleryProps) {
                 <X className="h-5 w-5" />
               </button>
 
-              <div className="aspect-[4/3] rounded-xl bg-gradient-to-br from-accent-purple/10 to-accent-blue/10 mb-6" />
+              <div className="relative mb-6 aspect-[4/3] overflow-hidden rounded-xl bg-gradient-to-br from-accent-purple/10 to-accent-blue/10">
+                {selected.imageUrl ? (
+                  <Image
+                    src={selected.imageUrl}
+                    alt={selected.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 80vw"
+                    className="object-contain"
+                    unoptimized
+                  />
+                ) : null}
+              </div>
 
               <h3 className="text-xl font-semibold text-foreground">{selected.title}</h3>
               <p className="mt-1 text-accent-blue">{selected.issuer}</p>

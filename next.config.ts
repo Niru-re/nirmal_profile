@@ -1,5 +1,14 @@
 import type { NextConfig } from "next";
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "";
+const resolvedSupabaseHostname = (() => {
+  try {
+    return supabaseUrl ? new URL(supabaseUrl).hostname : "supabase.co";
+  } catch {
+    return "supabase.co";
+  }
+})();
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
@@ -9,7 +18,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: resolvedSupabaseHostname,
+      },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
       },
     ],
   },

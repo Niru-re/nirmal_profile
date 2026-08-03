@@ -1,3 +1,5 @@
+import { projectImageUrl } from "@/lib/storage";
+
 export interface Project {
   slug: string;
   title: string;
@@ -37,7 +39,7 @@ export function normalizeProject(row: ProjectRow): Project {
     longDescription: row.long_description,
     category: row.category,
     featured: row.featured,
-    coverImage: row.cover_image,
+    coverImage: projectImageUrl(row.cover_image ?? ""),
     demoVideo: row.demo_video ?? undefined,
     screenshots: row.screenshots ?? [],
     features: row.features ?? [],

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
@@ -64,11 +65,22 @@ export function ProjectCard({ project, index = 0, featured = false }: ProjectCar
               featured ? "aspect-[16/9]" : "aspect-[16/10]"
             )}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-6xl font-bold text-white/[0.03]">
-                {project.title.charAt(0)}
+            {project.coverImage ? (
+              <Image
+                src={project.coverImage}
+                alt={project.title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                unoptimized
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-6xl font-bold text-white/[0.03]">
+                  {project.title.charAt(0)}
+                </div>
               </div>
-            </div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-60" />
             <div className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/40 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:opacity-100">
               <ArrowUpRight className="h-4 w-4 text-white" />

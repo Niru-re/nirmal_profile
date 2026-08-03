@@ -33,6 +33,11 @@ export function storageUrl(bucket: string, path: string): string {
   const cleanBucket = bucket.trim();
   const cleanPath = normalizedPath.replace(/^\/+/, "");
 
+  // If the bucket is not configured, fall back to a public path under /public.
+  if (!SUPABASE_URL) {
+    return `/${cleanBucket}/${cleanPath}`;
+  }
+
   // Avoid duplicating the bucket prefix if the incoming path already includes it.
   if (cleanPath === cleanBucket || cleanPath.startsWith(`${cleanBucket}/`)) {
     return `${SUPABASE_URL}/storage/v1/object/public/${cleanPath}`;

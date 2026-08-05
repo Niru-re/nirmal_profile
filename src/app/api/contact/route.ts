@@ -1,10 +1,11 @@
 import nodemailer from "nodemailer";
 
-const DEST_EMAIL = process.env.CONTACT_EMAIL?.trim();
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL?.trim();
 const SMTP_HOST = process.env.SMTP_HOST?.trim();
 const SMTP_PORT = Number(process.env.SMTP_PORT ?? 587);
 const SMTP_USER = process.env.SMTP_USER?.trim();
 const SMTP_PASS = process.env.SMTP_PASS?.trim();
+const DEST_EMAIL = CONTACT_EMAIL || SMTP_USER;
 
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;

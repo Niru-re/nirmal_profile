@@ -1,44 +1,99 @@
 "use client";
 
-import { useState } from "react";
-import { Send, CheckCircle } from "lucide-react";
+import { useRef, useState } from "react";
+import { CheckCircle, Loader2, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { Reveal } from "@/components/shared/reveal";
 
+function validateEmail(email: string) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email.trim());
+}
+
+function showToast(message: string, type: "success" | "error") {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.className = `fixed left-1/2 top-6 z-50 -translate-x-1/2 rounded-full px-4 py-3 text-sm font-medium shadow-lg transition-all duration-300 ${
+    type === "success" ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"
+  }`;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("opacity-0");
+  }, 2500);
+  setTimeout(() => {
+    toast.remove();
+  }, 3200);
+}
+
 export function ContactForm() {
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      const form = e.currentTarget as HTMLFormElement;
-      const fd = new FormData(form);
-      const payload: Record<string, string> = {};
-      fd.forEach((value, key) => {
-        payload[key] = String(value);
-      });
+    if (disabled || loading) {
+      return;
+    }
 
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const subject = String(formData.get("subject") ?? "").trim();
+    const message = String(formData.get("message") ?? "").trim();
+
+    if (!name || !email || !subject || !message) {
+      showToast("Please fill in all fields.", "error");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      showToast("Enter a valid email address.", "error");
+      return;
+    }
+
+    if (message.length < 10) {
+      showToast("Message must be at least 10 characters.", "error");
+      return;
+    }
+
+    if (message.length > 2000) {
+      showToast("Message must be 2000 characters or fewer.", "error");
+      return;
+    }
+
+    setLoading(true);
+    setDisabled(true);
+
+    try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ name, email, subject, message }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        console.error("Contact send failed", data);
-        alert(data?.error || "Failed to send message. Please try again later.");
-      } else {
-        setSubmitted(true);
+        showToast(data?.error || "Failed to send message. Please try again later.", "error");
+        setLoading(false);
+        setDisabled(false);
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      alert("An error occurred while sending your message.");
+
+      setSubmitted(true);
+      showToast("Message sent successfully!", "success");
+      form.reset();
+    } catch (error) {
+      console.error("Contact form error:", error);
+      showToast("Unable to send your message. Please try again later.", "error");
+      setDisabled(false);
     } finally {
       setLoading(false);
     }
@@ -57,7 +112,7 @@ export function ContactForm() {
   return (
     <Reveal>
       <GlassCard>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label htmlFor="name" className="mb-2 block text-sm font-medium text-foreground">
@@ -84,9 +139,18 @@ export function ContactForm() {
             </label>
             <Textarea id="message" name="message" placeholder="Tell me about your project..." required />
           </div>
-          <Button type="submit" size="lg" className="w-full" disabled={loading}>
-            {loading ? "Sending..." : "Send Message"}
-            {!loading && <Send className="h-4 w-4" />}
+          <Button type="submit" size="lg" className="w-full" disabled={disabled || loading}>
+            {loading ? (
+              <span className="inline-flex items-center gap-2">
+                Sending...
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                Send Message
+                <Send className="h-4 w-4" />
+              </span>
+            )}
           </Button>
         </form>
       </GlassCard>

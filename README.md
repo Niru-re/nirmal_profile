@@ -295,7 +295,17 @@ Copy the template and edit the values:
 cp .env.example .env.local
 ```
 
-Then open `.env.local` and fill in your credentials. See [Environment Variables](#-environment-variables).
+Open `.env.local` and fill in your credentials. For Gmail SMTP, use a Gmail App Password and set:
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-nirmalporeddiwar@gmail.com
+SMTP_PASS=YOUR_GMAIL_APP_PASSWORD
+CONTACT_EMAIL=nirmalporeddiwar@gmail.com
+```
+
+> If you do not need email delivery, leave these SMTP values blank and the contact form will return a helpful server-side configuration error.
 
 ### 4. Run the Development Server
 
@@ -338,6 +348,11 @@ npm run start       # Serve the production build locally
 | `NEXT_PUBLIC_GA_ID` | 🟡 | Google Analytics 4 Measurement ID | [analytics.google.com](https://analytics.google.com) (format `G-XXXXXXXXXX`) |
 | `NEXT_PUBLIC_SITE_URL` | 🟡 | Canonical URL for metadata/sitemap (overrides `SITE_CONFIG.url`) | Your production domain, e.g. `https://nirmaan.dev` |
 | `SUPABASE_SERVICE_ROLE_KEY` | 🔮 | Server-only admin key (future admin/API use) | Supabase → Settings → API → service_role — **never expose client-side** |
+| `SMTP_HOST` | ✅ | Gmail SMTP host for contact form delivery | `smtp.gmail.com` |
+| `SMTP_PORT` | ✅ | Gmail SMTP port | `587` |
+| `SMTP_USER` | ✅ | Gmail email address used for SMTP authentication | Your Gmail address |
+| `SMTP_PASS` | ✅ | Gmail App Password for SMTP authentication | Google Account Security → App Passwords |
+| `CONTACT_EMAIL` | ✅ | Destination email receiving contact form messages | Your Gmail address |
 
 ---
 
@@ -376,6 +391,21 @@ See **[docs/vercel.md](docs/vercel.md)** for step-by-step instructions covering:
 - Environment variables UI
 - Analytics & Speed Insights
 - Rollback strategies
+
+### Required Vercel Environment Variables
+
+Set these values in your Vercel project dashboard under Settings → Environment Variables:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `CONTACT_EMAIL`
+- `NEXT_PUBLIC_SITE_URL` (optional)
+- `NEXT_PUBLIC_CLARITY_ID` (optional)
+- `NEXT_PUBLIC_GA_ID` (optional)
 
 ### General Deployment (Docker, Self-Hosted, etc.)
 

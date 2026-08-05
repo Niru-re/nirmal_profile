@@ -1,6 +1,6 @@
 export const SITE_CONFIG = {
-  name: "Nirmal Anil Poreddiwar",
-  title: "Nirmal Anil Poreddiwar — Full-Stack Developer & Product Engineer",
+  name: "Nirmal Poreddiwar",
+  title: "Nirmal Poreddiwar — Full-Stack Developer & Product Engineer",
   description:
     "Building enterprise-quality digital products with precision, performance, and premium design.",
   url: "https://nirmaan.dev",

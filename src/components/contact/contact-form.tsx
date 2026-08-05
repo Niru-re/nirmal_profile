@@ -15,9 +15,33 @@ export function ContactForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      const form = e.currentTarget as HTMLFormElement;
+      const fd = new FormData(form);
+      const payload: Record<string, string> = {};
+      fd.forEach((value, key) => {
+        payload[key] = String(value);
+      });
+
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error("Contact send failed", data);
+        alert(data?.error || "Failed to send message. Please try again later.");
+      } else {
+        setSubmitted(true);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while sending your message.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
